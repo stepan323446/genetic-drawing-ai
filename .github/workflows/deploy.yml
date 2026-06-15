@@ -1,0 +1,22 @@
+name: Deploying
+
+on:
+  push:
+    branches: ["master"]
+
+jobs:
+  deploying:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.SSH_IP }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_SECRET_KEY }}
+          port: 22
+          script: |
+            cd ${{ vars.PATH }}
+            git pull
+            npm ci
+            npm run build
