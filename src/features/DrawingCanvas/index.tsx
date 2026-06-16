@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 interface DrawingCanvasProps {
   width: number
   size: number
-  pixels: React.RefObject<Uint8Array>
+  pixels: Uint8Array
   renderTrigger?: unknown
   className?: string
   onPaint?: (x: number, y: number) => void
@@ -27,7 +27,7 @@ const DrawingCanvas = ({ className, width, size, pixels, renderTrigger, onPaint 
     // Draw ImageData
     for (let py = 0; py < size; py++) {
     for (let px = 0; px < size; px++) {
-      const v = pixels.current[py * size + px]
+      const v = pixels[py * size + px]
 
       const x0 = Math.round(px * width / size)
       const x1 = Math.round((px + 1) * width / size)

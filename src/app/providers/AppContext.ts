@@ -7,7 +7,19 @@ export interface SettingsContextProps {
   size: number
   speed: number
   setSize: (val: number) => void
-  setSpeed: (val: number) => void
+  modifySpeed: (val: number) => void
+
+  populationSize: number
+  setPopulationSize: (val: number) => void
+
+  elitrate: number
+  setElitrate: (val: number) => void
+
+  mutation: number
+  setMutation: (val: number) => void
+
+  maxIteration: number
+  setMaxIteration: (val: number) => void
 }
 
 export interface ActionsContextProps {
@@ -21,6 +33,7 @@ export interface GAContextProps {
   generation: number
   
   fitness: number
+  progress: number
 
   userPixels: React.RefObject<Uint8Array>
   aiPixels: React.RefObject<Uint8Array>

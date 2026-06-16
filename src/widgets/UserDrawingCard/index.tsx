@@ -42,7 +42,7 @@ const UserDrawingCard = ({width}: UserDrawingProps) => {
           className="mx-auto" 
           width={width} 
           size={size}
-          pixels={userPixels} 
+          pixels={userPixels.current} 
           renderTrigger={userCanvasTrigger}
           onPaint={(x, y) => {
             if(status != 'init')
