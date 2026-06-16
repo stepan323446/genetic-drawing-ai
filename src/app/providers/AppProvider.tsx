@@ -11,7 +11,7 @@ interface AppProviderProps {
 }
 
 const AppProvider = ({ children }: AppProviderProps) => {
-  const [fitness, setFitness] = useState(0);
+  const [fitness] = useState(0);
   const [generation, setGeneration] = useState(0);
   const [aiStatus, setAiStatus] = useState<AIStatus>("init");
   const [speed, setSpeed] = useState(100);
