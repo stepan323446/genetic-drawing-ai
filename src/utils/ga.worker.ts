@@ -1,5 +1,5 @@
-import { evolve, initGenes } from './ga';
-import type { Gene, EvolveSettins } from './ga';
+import { evolve, initPopulations } from './ga';
+import type { Population, EvolveSettins } from './ga';
 
 type TypeMessage = 'START'|'PAUSE'|'RESUME'|'UPDATE_SPEED'|'RESET';
 interface EventGAMessage {
@@ -11,7 +11,7 @@ interface EventGAMessage {
 }
 
 let paused = false;
-let genes: Gene[] = [];
+let pops: Population[] = [];
 let gen = 0;
 let currentSettings: EvolveSettins|undefined = undefined;
 let currentTarget: Uint8Array = new Uint8Array();
@@ -25,7 +25,7 @@ self.onmessage = (e: MessageEvent<EventGAMessage>) => {
     currentTarget = e.data.target!;
     currentSettings = e.data.settings;
 
-    genes = initGenes(e.data.popSize!, e.data.target!);
+    pops = initPopulations(e.data.popSize!, e.data.target!);
     runLoop();
   }
   if (e.data.type === 'PAUSE') {
@@ -37,7 +37,7 @@ self.onmessage = (e: MessageEvent<EventGAMessage>) => {
   }
   if (e.data.type === 'RESET') {
     paused = true;
-    genes = [];
+    pops = [];
     gen = 0;
   }
   if (e.data.type === 'UPDATE_SPEED') {
@@ -51,28 +51,27 @@ function runLoop() {
   const step = () => {
     if (!currentSettings) return;
     if (paused) return;
-    if (!genes) return;
+    if (!pops) return;
 
-    genes = evolve(genes, currentTarget, currentSettings);
+    pops = evolve(pops, currentTarget, currentSettings);
     
     if(gen == 0)
-      startFitness = genes[0].fitness;
+      startFitness = pops[0].fitness;
 
     gen++;
 
     const progress = Math.round(
-      (1 - genes[0].fitness / startFitness) * 100
+      (1 - pops[0].fitness / startFitness) * 100
     );
 
     self.postMessage({
       type: 'UPDATE',
       generation: gen,
-      fitness: genes[0].fitness,
-      aiPixels: genes[0].population,
+      fitness: pops[0].fitness,
+      aiPixels: pops[0].population,
       progress: progress
     });
 
-    console.log(`Generation: ${gen} and Fitness: ${genes[0].fitness} and Progress: ${progress}`);
     setTimeout(step, currentSpeed);
   };
 

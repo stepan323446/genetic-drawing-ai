@@ -1,8 +1,13 @@
 import { createContext, useContext } from "react";
 
+// --- Context types ---
 export type AIStatus = 'init'|'running'|'paused'|'completed';
+export interface FitnessStoryItem {
+  generation: number;
+  normalizedFi: number;
+}
 
-// --- Interfaces ---
+// --- Context Props ---
 export interface SettingsContextProps {
   size: number
   speed: number
@@ -27,6 +32,7 @@ export interface ActionsContextProps {
   start: () => void
   pause: () => void
   reset: () => void
+  resume: () => void
 }
 
 export interface GAContextProps {
@@ -37,10 +43,11 @@ export interface GAContextProps {
 
   userPixels: React.RefObject<Uint8Array>
   aiPixels: React.RefObject<Uint8Array>
-  modifyUserPixel: (x: number, y: number, value: number, brushSize: number) => void;
-  resetPixels: () => void;
-  userCanvasTrigger: boolean;
-  updateUserTrigger: () => void;
+  modifyUserPixel: (x: number, y: number, value: number, brushSize: number) => void
+  resetPixels: () => void
+  userCanvasTrigger: boolean
+  updateUserTrigger: () => void
+  chartDataRef: React.RefObject<FitnessStoryItem[]>
 }
 
 // --- Contexts ---

@@ -1,5 +1,5 @@
 import { Container } from "@/shared";
-import { TextStatsCard, Welcome } from "@/features";
+import { FitnessGraphCard, TextStatsCard, Welcome } from "@/features";
 import { AiDrawingCard, ControlBar, UserDrawingCard } from "@/widgets";
 import AppProvider from "./providers/AppProvider";
 
@@ -16,7 +16,10 @@ function App() {
 
           <AiDrawingCard width={350} />
         </div>
-        <TextStatsCard />
+        <TextStatsCard className="mb-4" />
+        <div className="grid grid-cols-2">
+          <FitnessGraphCard />
+        </div>
       </Container>
     </AppProvider>
   );

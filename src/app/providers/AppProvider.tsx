@@ -4,6 +4,7 @@ import {
   SettingsContext,
   ActionsContext,
   GAContext,
+  type FitnessStoryItem,
 } from "./AppContext";
 
 interface AppProviderProps {
@@ -11,20 +12,28 @@ interface AppProviderProps {
 }
 
 const AppProvider = ({ children }: AppProviderProps) => {
+  // ---- Variables ----
+  // Settings
   const [fitness, setFitness] = useState(0);
   const [generation, setGeneration] = useState(0);
-  const [aiStatus, setAiStatus] = useState<AIStatus>("init");
   const [speed, setSpeed] = useState(100);
-  const [size, setSize] = useState(32);
-  const userPixels = useRef(new Uint8Array(size * size).fill(255));
-  const aiPixels = useRef(new Uint8Array(size * size).fill(255));
-  const [userCanvasTrigger, setUserCanvasTrigger] = useState(false);
   const [populationSize, setPopulationSize] = useState(100);
   const [elitrate, setElitrate] = useState(0.1);
   const [mutation, setMutation] = useState(0.25);
   const [maxIteration, setMaxIteration] = useState(0);
+
+  // Canvas
+  const [size, setSize] = useState(32);
+  const userPixels = useRef(new Uint8Array(size * size).fill(255));
+  const aiPixels = useRef(new Uint8Array(size * size).fill(255));
+  const [userCanvasTrigger, setUserCanvasTrigger] = useState(false);
+
+  // Status
+  const chartDataRef = useRef<FitnessStoryItem[]>([]);
+  const [aiStatus, setAiStatus] = useState<AIStatus>("init");
   const [progress, setProgress] = useState(0);
 
+  // ---- Worker ----
   const workerRef = useRef<Worker | null>(null);
 
   useEffect(() => {
@@ -39,10 +48,15 @@ const AppProvider = ({ children }: AppProviderProps) => {
         setGeneration(e.data.generation);
         setFitness(e.data.fitness);
         setProgress(e.data.progress);
+        chartDataRef.current.push({
+          generation: e.data.generation,
+          normalizedFi:  1 - (e.data.fitness / (userPixels.current.length * 255))
+        });
       }
     };
   }, [])
 
+  // ---- Actions ----
   const start = () => {
     setAiStatus("running");
 
@@ -63,13 +77,31 @@ const AppProvider = ({ children }: AppProviderProps) => {
     setAiStatus("paused");
     workerRef.current?.postMessage({ type: 'PAUSE' });
   };
+  const resume = () => {
+    if (aiStatus != "paused") {
+      console.log("AI is not paused to resume");
+      return;
+    }
+    setAiStatus("running");
+    workerRef.current?.postMessage({ type: 'RESUME' });
+  }
+  const reset = (newSize: number = 32) => {
+    setAiStatus("init");
+    workerRef.current?.postMessage({ type: 'RESET' });
+    chartDataRef.current = [];
+    setSpeed(100);
+    setGeneration(0);
+    setSize(newSize);
+    resetPixels(newSize);
+  };
+
+  // ---- Modifiers ----
   const setSizeCanvas = (value: number) => {
     if (aiStatus != "init") {
       console.log("AI must be in initional state. Stop it");
       return;
     }
     reset(value);
-    workerRef.current?.postMessage({ type: 'RESUME' });
   };
   const updateUserTrigger = () => setUserCanvasTrigger(!userCanvasTrigger);
   const resetPixels = (newSize: number = size) => {
@@ -81,15 +113,6 @@ const AppProvider = ({ children }: AppProviderProps) => {
     setSpeed(value);
     workerRef.current?.postMessage({ type: 'UPDATE_SPEED', speed: value });
   }
-
-  const reset = (newSize: number = 32) => {
-    setAiStatus("init");
-    workerRef.current?.postMessage({ type: 'RESET' });
-    setSpeed(100);
-    setGeneration(0);
-    setSize(newSize);
-    resetPixels(newSize);
-  };
   const modifyUserPixel = (
     x: number,
     y: number,
@@ -110,6 +133,7 @@ const AppProvider = ({ children }: AppProviderProps) => {
     updateUserTrigger();
   };
 
+  // ---- Contexts ----
   return (
     <SettingsContext.Provider
       value={{ 
@@ -121,7 +145,7 @@ const AppProvider = ({ children }: AppProviderProps) => {
        }}
     >
       <ActionsContext.Provider
-        value={{ start, pause, reset, status: aiStatus }}
+        value={{ start, pause, reset, resume, status: aiStatus }}
       >
         <GAContext.Provider
           value={{
@@ -133,7 +157,8 @@ const AppProvider = ({ children }: AppProviderProps) => {
             userCanvasTrigger,
             resetPixels,
             updateUserTrigger,
-            progress
+            progress,
+            chartDataRef
           }}
         >
           {children}

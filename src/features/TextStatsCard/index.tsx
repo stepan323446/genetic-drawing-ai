@@ -3,11 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn/components/ui
 import { Field, FieldLabel } from "@/shadcn/components/ui/field";
 import { Progress } from "@/shadcn/components/ui/progress";
 
-const TextStatsCard = () => {
+interface TextStatsCard {
+  className?: string;
+}
+
+const TextStatsCard = ({ className }: TextStatsCard) => {
   const { status } = useActions();
   const { generation, fitness, progress } = useGA();
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader>
         <CardTitle>
           Statistic

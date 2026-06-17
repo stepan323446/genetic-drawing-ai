@@ -3,6 +3,7 @@ import { AIControlForm } from "@/features";
 import { Button } from "@/shadcn/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/shadcn/components/ui/card";
 import { Field, FieldLabel } from "@/shadcn/components/ui/field";
+import { cn } from "@/shadcn/lib/utils";
 
 interface ControlBarProps {
   className?: string;
@@ -33,7 +34,7 @@ const presets: Preset[] = [
   {
     name: 'Large (64x64)',
     size: 64,
-    populationSize: 500,
+    populationSize: 1000,
     elitrate: 0.1,
     mutation: 0.25,
   },
@@ -43,45 +44,40 @@ const presets: Preset[] = [
     populationSize: 1000,
     elitrate: 0.1,
     mutation: 0.25,
-  },
-  {
-    name: 'Fast',
-    size: 32,
-    populationSize: 100,
-    elitrate: 0.2,  // больше элит
-    mutation: 0.5,  // много мутаций
-  },
-  {
-    name: 'Precise',
-    size: 32,
-    populationSize: 1000,
-    elitrate: 0.05, // мало элит — больше разнообразия
-    mutation: 0.1,
-  },
-  {
-    name: 'Chaos',
-    size: 32,
-    populationSize: 200,
-    elitrate: 0.01,
-    mutation: 1.0,  // 200 мутаций — почти каждая особь меняется
-  },
-  {
-    name: 'Elitist',
-    size: 32,
-    populationSize: 200,
-    elitrate: 0.5,  // половина — элиты
-    mutation: 0.05,
   }
 ]
 const ControlBar = ({ className }: ControlBarProps) => {
   const {
-      setSize,
-      setPopulationSize,
-      setElitrate,
-      setMutation,
-    } = useSettings();
+    size,
+    setSize,
+    populationSize,
+    setPopulationSize,
+    elitrate,
+    setElitrate,
+    mutation,
+    setMutation,
+  } = useSettings();
 
-   const { status } = useActions();
+  const { status } = useActions();
+
+  const currentSettings = [
+    {
+      name: 'Canvas size',
+      value: size
+    },
+    {
+      name: 'Population',
+      value: populationSize
+    },
+    {
+      name: 'Elitrate',
+      value: elitrate
+    },
+    {
+      name: 'Mutation',
+      value: mutation
+    }
+  ]
 
   const selectPreset = (preset: Preset) => {
     setSize(preset.size);
@@ -91,19 +87,28 @@ const ControlBar = ({ className }: ControlBarProps) => {
   }
 
   return (
-    <Card className={className}>
-      <CardContent className="overflow-x-auto overflow-y-hidden">
+    <Card className={cn("overflow-x-auto overflow-y-hidden", className)}>
+      <CardContent>
         <AIControlForm />
       </CardContent>
       <CardFooter>
-        <Field>
+        {status == 'init' && <Field>
           <FieldLabel>Presets</FieldLabel>
           <div className="flex space-x-4">
             {presets.map((preset) => (
-              <Button type="button" variant="outline" onClick={() => selectPreset(preset)} disabled={status != 'init'}>{preset.name}</Button>
+              <Button key={preset.name} type="button" variant="outline" onClick={() => selectPreset(preset)} disabled={status != 'init'}>{preset.name}</Button>
             ))}
           </div>
-        </Field>
+        </Field>}
+
+        {status != 'init' && <div className="flex space-x-8">
+          {currentSettings.map((preset) => (
+            <Field key={preset.name}>
+              <FieldLabel className="text-nowrap mb-3">{preset.name}</FieldLabel>
+              <div>{preset.value}</div>
+            </Field>
+          ))}
+        </div>}
       </CardFooter>
     </Card>
   )

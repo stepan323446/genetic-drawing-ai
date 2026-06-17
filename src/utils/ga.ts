@@ -7,7 +7,7 @@ export const fitness = (current: Uint8Array, target: Uint8Array): number => {
   return diff;
 };
 
-// Crossing genes between ones
+// Crossing pops between ones
 export const crossover = (
   a: Uint8Array,
   b: Uint8Array,
@@ -27,14 +27,14 @@ export const crossover = (
   return [child1, child2];
 };
 
-// Init genes with random noise
-export function initGenes(popSize: number, target: Uint8Array): Gene[] {
-  const result: Gene[] = Array.from({ length: popSize }, () => {
+// Init pops with random noise
+export function initPopulations(popSize: number, target: Uint8Array): Population[] {
+  const result: Population[] = Array.from({ length: popSize }, () => {
 
     const population = new Uint8Array(target.length).map(() => Math.floor(Math.random() * 256));
     return { population, fitness: fitness(population, target) };
   });
-  return sortGenes(result);
+  return sortPops(result);
 }
 
 // Mutate random pixels with rate
@@ -47,11 +47,11 @@ export const mutate = (ind: Uint8Array, rate: number): void => {
   }
 };
 
-export const sortGenes = (genes: Gene[]) => {
-  return genes.sort((a, b) => a.fitness - b.fitness);
+export const sortPops = (pops: Population[]) => {
+  return pops.sort((a, b) => a.fitness - b.fitness);
 }
 
-export interface Gene {
+export interface Population {
   population: Uint8Array
   fitness: number
 }
@@ -60,20 +60,20 @@ export interface EvolveSettins {
   mutation: number
 }
 export const evolve = (
-  genes: Gene[],
+  pops: Population[],
   target: Uint8Array,
   settings: EvolveSettins,
-): Gene[] => {
-  const popSize = genes.length;
+): Population[] => {
+  const popSize = pops.length;
 
   // Elites
   const eliteCount = Math.floor(popSize * settings.elitrate);
-  const newPop: Gene[] = genes.slice(0, eliteCount);
+  const newPop: Population[] = pops.slice(0, eliteCount);
 
   // Crossover (except of elite)
   while (newPop.length < popSize) {
-    const a = genes[Math.floor(Math.random() * popSize)];
-    const b = genes[Math.floor(Math.random() * popSize)];
+    const a = pops[Math.floor(Math.random() * popSize)];
+    const b = pops[Math.floor(Math.random() * popSize)];
     const [c1, c2] = crossover(a.population, b.population);
 
     newPop.push({ population: c1, fitness: fitness(c1, target) });
@@ -91,5 +91,5 @@ export const evolve = (
     newPop[randGene].fitness = fitness(newPop[randGene].population, target);
   }
 
-  return sortGenes(newPop);
+  return sortPops(newPop);
 };

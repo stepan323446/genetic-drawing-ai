@@ -25,7 +25,7 @@ interface AIControlForm {
 const sizes = [2, 4, 8, 16, 32, 64, 128];
 
 const AIValuesForm = ({ className }: AIControlForm) => {
-  const { status, start, reset, pause } = useActions();
+  const { status, start, resume, reset, pause } = useActions();
 
   const {
     size,
@@ -127,7 +127,7 @@ const AIValuesForm = ({ className }: AIControlForm) => {
       )}
 
       {status != 'init' && <div className="flex space-x-4 me-5 shrink-0">
-        <Field className="w-30">
+        <Field className="w-70">
           <FieldLabel className="mb-2">Speed ({speed}ms)</FieldLabel>
           <Slider
             defaultValue={[speed]}
@@ -163,7 +163,7 @@ const AIValuesForm = ({ className }: AIControlForm) => {
                 </Button>
               )}
               {status == "paused" && (
-                <Button onClick={start} type="button">
+                <Button onClick={resume} type="button">
                   Play <PlayIcon />
                 </Button>
               )}
