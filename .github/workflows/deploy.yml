@@ -5,18 +5,38 @@ on:
     branches: ["master"]
 
 jobs:
-  deploying:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: appleboy/ssh-action@v0.1.8
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install and Build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Clean server directory
+        uses: appleboy/ssh-action@v0.1.8
         with:
           host: ${{ secrets.SSH_IP }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_SECRET_KEY }}
-          port: 22
           script: |
-            cd ${{ vars.PATH }}
-            git pull
-            npm ci
-            npm run build
+            rm -rf ${{ vars.PATH }}/*
+
+      - name: Copy build to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_IP }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_SECRET_KEY }}
+          source: "dist/*"
+          target: ${{ vars.PATH }}
+          strip_components: 1
