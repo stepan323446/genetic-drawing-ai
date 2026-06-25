@@ -34,6 +34,7 @@ const AppProvider = ({ children }: AppProviderProps) => {
   const [progress, setProgress] = useState(0);
 
   // ---- Worker ----
+  const runIdRef = useRef(0);
   const workerRef = useRef<Worker | null>(null);
 
   useEffect(() => {
@@ -44,28 +45,35 @@ const AppProvider = ({ children }: AppProviderProps) => {
 
     workerRef.current.onmessage = (e) => {
       if (e.data.type === 'UPDATE') {
+        if(runIdRef.current != e.data.runId) return
         aiPixels.current = e.data.aiPixels;
         setGeneration(e.data.generation);
         setFitness(e.data.fitness);
         setProgress(e.data.progress);
         chartDataRef.current.push({
           generation: e.data.generation,
-          normalizedFi:  1 - (e.data.fitness / (userPixels.current.length * 255))
+          normalizedFi:  1 - (e.data.fitness / (userPixels.current.length * 255)),
+          fitness: e.data.fitness
         });
+      }
+      if (e.data.type === 'MAX_ITERATION_PAUSED') {
+        setAiStatus("paused");
       }
     };
   }, [])
 
   // ---- Actions ----
   const start = () => {
+    runIdRef.current++;
     setAiStatus("running");
 
     workerRef.current?.postMessage({
       type: 'START',
+      runId: runIdRef.current,
       target: userPixels.current,
       popSize: populationSize,
       speed,
-      settings: { elitrate, mutation },
+      settings: { elitrate, mutation, maxIteration },
     });
   };
   const pause = () => {
@@ -86,11 +94,14 @@ const AppProvider = ({ children }: AppProviderProps) => {
     workerRef.current?.postMessage({ type: 'RESUME' });
   }
   const reset = (newSize: number = 32) => {
-    setAiStatus("init");
+    runIdRef.current++;
     workerRef.current?.postMessage({ type: 'RESET' });
+    setAiStatus("init");
     chartDataRef.current = [];
     setSpeed(100);
     setGeneration(0);
+    setFitness(0);
+    setProgress(0);
     setSize(newSize);
     resetPixels(newSize);
   };

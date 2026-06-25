@@ -18,7 +18,7 @@ const TextStatsCard = ({ className }: TextStatsCard) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex space-x-4">
+        <div className="grid md:grid-cols-4 grid-cols-2 gap-y-4">
           <Field>
             <FieldLabel>Generation</FieldLabel>
             {generation}

@@ -5,12 +5,13 @@ interface DrawingCanvasProps {
   width: number
   size: number
   pixels: Uint8Array
+  canvasId?: string
   renderTrigger?: unknown
   className?: string
   onPaint?: (x: number, y: number) => void
 }
 
-const DrawingCanvas = ({ className, width, size, pixels, renderTrigger, onPaint }: DrawingCanvasProps) => {
+const DrawingCanvas = ({ className, width, size, pixels, canvasId, renderTrigger, onPaint }: DrawingCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const isDrawing = useRef(false);
 
@@ -71,7 +72,8 @@ const DrawingCanvas = ({ className, width, size, pixels, renderTrigger, onPaint 
 
   return (
     <Card style={{width: `${width}px`}} className={className}>
-      <canvas 
+      <canvas
+        id={canvasId}
         ref={canvasRef} 
         width={width} height={width}
         onMouseDown={e => { isDrawing.current = true; handlePaint(e) }}

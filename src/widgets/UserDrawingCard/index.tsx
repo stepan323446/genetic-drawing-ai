@@ -25,7 +25,7 @@ const UserDrawingCard = ({width}: UserDrawingProps) => {
   const uploadFile = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const pixels = await loadImage(file, size)
+    const pixels = await loadImage(file, size);
     userPixels.current.set(pixels);
     e.target.value = '';
     updateUserTrigger();

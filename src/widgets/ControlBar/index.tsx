@@ -1,9 +1,11 @@
 import { useActions, useSettings } from "@/app/providers/AppContext";
-import { AIControlForm } from "@/features";
+import { AIControlForm, ImageExamplesDrawer } from "@/features";
 import { Button } from "@/shadcn/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/shadcn/components/ui/card";
 import { Field, FieldLabel } from "@/shadcn/components/ui/field";
 import { cn } from "@/shadcn/lib/utils";
+import { Image as ImageIcon } from "lucide-react";
+import { useState } from "react";
 
 interface ControlBarProps {
   className?: string;
@@ -59,6 +61,7 @@ const ControlBar = ({ className }: ControlBarProps) => {
   } = useSettings();
 
   const { status } = useActions();
+  const [ openExamples, setOpenExamples ] = useState(false);
 
   const currentSettings = [
     {
@@ -95,6 +98,9 @@ const ControlBar = ({ className }: ControlBarProps) => {
         {status == 'init' && <Field>
           <FieldLabel>Presets</FieldLabel>
           <div className="flex space-x-4">
+            <Button type="button" variant="default" onClick={() => setOpenExamples(true)}>
+              <ImageIcon />
+            </Button>
             {presets.map((preset) => (
               <Button key={preset.name} type="button" variant="outline" onClick={() => selectPreset(preset)} disabled={status != 'init'}>{preset.name}</Button>
             ))}
@@ -110,6 +116,8 @@ const ControlBar = ({ className }: ControlBarProps) => {
           ))}
         </div>}
       </CardFooter>
+
+      <ImageExamplesDrawer open={openExamples} onOpenChange={setOpenExamples} size={size} />
     </Card>
   )
 }

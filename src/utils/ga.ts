@@ -58,6 +58,7 @@ export interface Population {
 export interface EvolveSettins {
   elitrate: number
   mutation: number
+  maxIteration: number
 }
 export const evolve = (
   pops: Population[],

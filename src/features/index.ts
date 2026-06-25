@@ -3,3 +3,7 @@ export { default as AIControlForm } from './AIControlForm';
 export { default as DrawingCanvas } from './DrawingCanvas';
 export { default as TextStatsCard } from './TextStatsCard';
 export { default as FitnessGraphCard } from './FitnessGraphCard';
+export { default as SpeedCard } from './SpeedCard';
+export { default as ThemeSwitcher } from './ThemeSwitcher';
+export { default as DescriptionCard } from './DescriptionCard';
+export { default as ImageExamplesDrawer } from './ImageExamplesDrawer';

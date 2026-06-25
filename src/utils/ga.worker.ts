@@ -4,12 +4,14 @@ import type { Population, EvolveSettins } from './ga';
 type TypeMessage = 'START'|'PAUSE'|'RESUME'|'UPDATE_SPEED'|'RESET';
 interface EventGAMessage {
   type: TypeMessage
+  runId: number
   target?: Uint8Array
   settings?: EvolveSettins
   speed?: number
   popSize?: number
 }
 
+let runId = 0;
 let paused = false;
 let pops: Population[] = [];
 let gen = 0;
@@ -24,6 +26,7 @@ self.onmessage = (e: MessageEvent<EventGAMessage>) => {
     currentSpeed = e.data.speed!;
     currentTarget = e.data.target!;
     currentSettings = e.data.settings;
+    runId = e.data.runId;
 
     pops = initPopulations(e.data.popSize!, e.data.target!);
     runLoop();
@@ -66,11 +69,20 @@ function runLoop() {
 
     self.postMessage({
       type: 'UPDATE',
+      runId: runId,
       generation: gen,
       fitness: pops[0].fitness,
       aiPixels: pops[0].population,
       progress: progress
     });
+
+    if(gen == currentSettings.maxIteration) {
+      paused = true;
+      self.postMessage({
+        type: 'MAX_ITERATION_PAUSED'
+      });
+      return;
+    }
 
     setTimeout(step, currentSpeed);
   };

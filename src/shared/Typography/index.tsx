@@ -1,7 +1,7 @@
 import { cn } from "@/shadcn/lib/utils";
 import type { JSX, ReactNode } from "react";
 
-type TypographyVariant = 'h1'|'h2'|'h3'|'subtitle1'|'subtitle2'|'body1'|'body2'|'meta';
+type TypographyVariant = 'h1'|'h2'|'h3'|'h4'|'subtitle1'|'subtitle2'|'body1'|'body2'|'meta';
 
 interface TypographyProps {
   children: ReactNode
@@ -13,6 +13,7 @@ const styles: Record<TypographyVariant, string> = {
   h1:        "scroll-m-20 text-4xl font-medium tracking-tight lg:text-5xl",
   h2:        "scroll-m-20 text-3xl font-semibold tracking-tight",
   h3:        "scroll-m-20 text-2xl font-semibold tracking-tight",
+  h4:        "scroll-m-20 text-xl tracking-tight",
   subtitle1: "text-xl",
   subtitle2: "text-lg",
   body1:     "text-base leading-7",
@@ -21,7 +22,7 @@ const styles: Record<TypographyVariant, string> = {
 }
 
 const tags: Record<TypographyVariant, keyof JSX.IntrinsicElements> = {
-  h1: 'h1', h2: 'h2', h3: 'h3',
+  h1: 'h1', h2: 'h2', h3: 'h3', h4: 'h4',
   subtitle1: 'p', subtitle2: 'p',
   body1: 'p', body2: 'p', meta: 'span',
 }

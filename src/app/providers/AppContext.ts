@@ -5,6 +5,7 @@ export type AIStatus = 'init'|'running'|'paused'|'completed';
 export interface FitnessStoryItem {
   generation: number;
   normalizedFi: number;
+  fitness: number;
 }
 
 // --- Context Props ---
