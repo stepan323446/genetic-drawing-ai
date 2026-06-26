@@ -56,7 +56,7 @@ const AppProvider = ({ children }: AppProviderProps) => {
           fitness: e.data.fitness
         });
       }
-      if (e.data.type === 'MAX_ITERATION_PAUSED') {
+      if (e.data.type === 'AUTO_PAUSED') {
         setAiStatus("paused");
       }
     };

@@ -1,5 +1,5 @@
-export interface Population {
-  population: Uint8Array
+export interface Individual {
+  genes: Uint8Array
   fitness: number
 }
 
@@ -33,27 +33,26 @@ export const crossover = (
 };
 
 // Init pops with random noise
-export function initPopulations(popSize: number, target: Uint8Array): Population[] {
-  const result: Population[] = Array.from({ length: popSize }, () => {
+export function initPopulation(popSize: number, target: Uint8Array): Individual[] {
+  const result: Individual[] = Array.from({ length: popSize }, () => {
 
-    const population = new Uint8Array(target.length).map(() => Math.floor(Math.random() * 256));
-    return { population, fitness: fitness(population, target) };
+    const genes = new Uint8Array(target.length).map(() => Math.floor(Math.random() * 256));
+    return { genes, fitness: fitness(genes, target) };
   });
-  return sortPops(result);
+  return sortPopulation(result);
 }
 
 // Mutate random pixels with rate
-export const mutate = (ind: Uint8Array, rate: number): void => {
-  const mutations = Math.floor(ind.length * rate);
-  for (let i = 0; i < mutations; i++) {
-    ind[Math.floor(Math.random() * ind.length)] = Math.floor(
-      Math.random() * 256,
-    );
-  }
+export const mutate = (indiv: Individual, target: Uint8Array): void => {
+  const randPixel      = Math.floor(Math.random() * indiv.genes.length);
+  const randValue      = Math.floor(Math.random() * 256);
+
+  indiv.genes[randPixel] = randValue;
+  indiv.fitness = fitness(indiv.genes, target);
 };
 
-export const sortPops = (pops: Population[]) => {
-  return pops.sort((a, b) => a.fitness - b.fitness);
+export const sortPopulation = (population: Individual[]) => {
+  return population.sort((a, b) => a.fitness - b.fitness);
 }
 
 
@@ -63,36 +62,35 @@ export interface EvolveSettins {
   maxIteration: number
 }
 export const evolve = (
-  pops: Population[],
+  population: Individual[],
   target: Uint8Array,
   settings: EvolveSettins,
-): Population[] => {
-  const popSize = pops.length;
+): Individual[] => {
+  const popSize = population.length;
 
   // Elites
   const eliteCount = Math.floor(popSize * settings.elitrate);
-  const newPop: Population[] = pops.slice(0, eliteCount);
+  const newPop: Individual[] = population.slice(0, eliteCount);
 
   // Crossover (except of elite)
   while (newPop.length < popSize) {
-    const a = pops[Math.floor(Math.random() * popSize)];
-    const b = pops[Math.floor(Math.random() * popSize)];
-    const [c1, c2] = crossover(a.population, b.population);
+    const a = population[Math.floor(Math.random() * popSize)];
+    const b = population[Math.floor(Math.random() * popSize)];
+    const [c1, c2] = crossover(a.genes, b.genes);
 
-    newPop.push({ population: c1, fitness: fitness(c1, target) });
+    newPop.push({ genes: c1, fitness: fitness(c1, target) });
     if (newPop.length < popSize) {
-      newPop.push({ population: c2, fitness: fitness(c2, target) });
+      newPop.push({ genes: c2, fitness: fitness(c2, target) });
     }
   }
 
   // Mutation for all populations
-  const totalMutations = Math.floor(popSize * settings.mutation);
+  const totalMutations = popSize * settings.mutation;
   for (let i = 0; i < totalMutations; i++) {
-    const randGene = Math.floor(Math.random() * newPop.length);
-    const randPixel = Math.floor(Math.random() * target.length);
-    newPop[randGene].population[randPixel] = Math.floor(Math.random() * 256);
-    newPop[randGene].fitness = fitness(newPop[randGene].population, target);
+    const randPopulation = Math.floor(Math.random() * newPop.length);
+
+    mutate(newPop[randPopulation], target);
   }
 
-  return sortPops(newPop);
+  return sortPopulation(newPop);
 };

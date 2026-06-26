@@ -1,5 +1,5 @@
-import { evolve, initPopulations } from './ga';
-import type { Population, EvolveSettins } from './ga';
+import { evolve, initPopulation } from './ga';
+import type { Individual, EvolveSettins } from './ga';
 
 type TypeMessage = 'START'|'PAUSE'|'RESUME'|'UPDATE_SPEED'|'RESET';
 interface EventGAMessage {
@@ -13,7 +13,7 @@ interface EventGAMessage {
 
 let runId = 0;
 let paused = false;
-let pops: Population[] = [];
+let population: Individual[] = [];
 let gen = 0;
 let currentSettings: EvolveSettins|undefined = undefined;
 let currentTarget: Uint8Array = new Uint8Array();
@@ -28,7 +28,7 @@ self.onmessage = (e: MessageEvent<EventGAMessage>) => {
     currentSettings = e.data.settings;
     runId = e.data.runId;
 
-    pops = initPopulations(e.data.popSize!, e.data.target!);
+    population = initPopulation(e.data.popSize!, e.data.target!);
     runLoop();
   }
   if (e.data.type === 'PAUSE') {
@@ -40,7 +40,7 @@ self.onmessage = (e: MessageEvent<EventGAMessage>) => {
   }
   if (e.data.type === 'RESET') {
     paused = true;
-    pops = [];
+    population = [];
     gen = 0;
   }
   if (e.data.type === 'UPDATE_SPEED') {
@@ -54,32 +54,41 @@ function runLoop() {
   const step = () => {
     if (!currentSettings) return;
     if (paused) return;
-    if (!pops) return;
+    if (!population) return;
 
-    pops = evolve(pops, currentTarget, currentSettings);
+    population = evolve(population, currentTarget, currentSettings);
     
     if(gen == 0)
-      startFitness = pops[0].fitness;
+      startFitness = population[0].fitness;
 
     gen++;
 
     const progress = Math.round(
-      (1 - pops[0].fitness / startFitness) * 100
+      (1 - population[0].fitness / startFitness) * 100
     );
 
     self.postMessage({
       type: 'UPDATE',
       runId: runId,
       generation: gen,
-      fitness: pops[0].fitness,
-      aiPixels: pops[0].population,
+      fitness: population[0].fitness,
+      aiPixels: population[0].genes,
       progress: progress
     });
 
+    // Auto pause after max iterations
     if(gen == currentSettings.maxIteration) {
       paused = true;
       self.postMessage({
-        type: 'MAX_ITERATION_PAUSED'
+        type: 'AUTO_PAUSED'
+      });
+      return;
+    }
+    // Auto pause when fitness is 0 (success)
+    if(population[0].fitness == 0) {
+      paused = true;
+      self.postMessage({
+        type: 'AUTO_PAUSED'
       });
       return;
     }
