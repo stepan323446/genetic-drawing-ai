@@ -7,3 +7,4 @@ export { default as SpeedCard } from './SpeedCard';
 export { default as ThemeSwitcher } from './ThemeSwitcher';
 export { default as DescriptionCard } from './DescriptionCard';
 export { default as ImageExamplesDrawer } from './ImageExamplesDrawer';
+export { default as ComparatorCard } from './ComparatorCard';

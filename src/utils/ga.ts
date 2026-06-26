@@ -1,3 +1,8 @@
+export interface Population {
+  population: Uint8Array
+  fitness: number
+}
+
 // Fitness function fi = |current - target|
 export const fitness = (current: Uint8Array, target: Uint8Array): number => {
   let diff = 0;
@@ -51,10 +56,7 @@ export const sortPops = (pops: Population[]) => {
   return pops.sort((a, b) => a.fitness - b.fitness);
 }
 
-export interface Population {
-  population: Uint8Array
-  fitness: number
-}
+
 export interface EvolveSettins {
   elitrate: number
   mutation: number

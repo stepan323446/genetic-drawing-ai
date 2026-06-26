@@ -47,7 +47,7 @@ const FitnessGraphCard = () => {
         <CardTitle>Normalized Fitness ({getLastFitness})</CardTitle>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-50 w-full" hidden={chartData.length == 0}>
+        {chartData.length > 0 && <ChartContainer config={chartConfig} className="h-50 w-full">
           <AreaChart data={chartData} accessibilityLayer>
             <XAxis dataKey="generation" tickLine={false} axisLine={false} />
             <YAxis domain={[0, 1]} tickLine={false} axisLine={false} />
@@ -59,7 +59,7 @@ const FitnessGraphCard = () => {
               isAnimationActive={false}
             />
           </AreaChart>
-        </ChartContainer>
+        </ChartContainer>}
         <Empty hidden={chartData.length > 0}>
           <EmptyHeader>
             <EmptyMedia variant="icon">

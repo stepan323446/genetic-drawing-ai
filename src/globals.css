@@ -125,3 +125,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+.markdown-text {
+    @apply text-base;
+}
+.markdown-text h1 {
+    @apply text-4xl mb-5;
+}
+.markdown-text h2 {
+    @apply text-2xl mb-3 mt-4;
+}
+.markdown-text p {
+    @apply mb-2;
+}

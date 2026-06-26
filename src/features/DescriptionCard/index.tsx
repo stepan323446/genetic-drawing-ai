@@ -1,5 +1,7 @@
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/shadcn/components/ui/card";
 import ThemeSwitcher from "../ThemeSwitcher";
+import Markdown from "react-markdown";
+import DescriptionText from './description.md?raw'
 
 const DescriptionCard = () => {
   return (
@@ -10,8 +12,8 @@ const DescriptionCard = () => {
           <ThemeSwitcher />
         </CardAction>
       </CardHeader>
-      <CardContent>
-        Nothing
+      <CardContent className="markdown-text">
+        <Markdown>{DescriptionText}</Markdown>
       </CardContent>
     </Card>
   )

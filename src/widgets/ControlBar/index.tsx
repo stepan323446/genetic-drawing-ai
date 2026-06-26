@@ -20,32 +20,67 @@ interface Preset {
 
 const presets: Preset[] = [
   {
-    name: 'Small (16x16)',
+    name: '8x8',
+    size: 8,
+    populationSize: 80,
+    elitrate: 0.1,
+    mutation: 0.25,
+  },
+  {
+    name: '16x16',
     size: 16,
     populationSize: 100,
     elitrate: 0.1,
     mutation: 0.25,
   },
   {
-    name: 'Medium (32x32)',
+    name: '32x32',
     size: 32,
     populationSize: 200,
     elitrate: 0.1,
     mutation: 0.25,
   },
   {
-    name: 'Large (64x64)',
+    name: '64x64',
     size: 64,
     populationSize: 1000,
     elitrate: 0.1,
     mutation: 0.25,
   },
   {
-    name: 'XLarge (128x128)',
+    name: '128x128',
     size: 128,
     populationSize: 1000,
     elitrate: 0.1,
     mutation: 0.25,
+  },
+  {
+    name: 'Chaos',
+    size: 32,
+    populationSize: 300,
+    elitrate: 0.02,
+    mutation: 10,
+  },
+  {
+    name: 'Stagnation',
+    size: 32,
+    populationSize: 50,
+    elitrate: 0.5,
+    mutation: 0.02,
+  },
+  {
+    name: 'Speedrun (32x32)',
+    size: 32,
+    populationSize: 300,
+    elitrate: 0.3,
+    mutation: 0.2,
+  },
+  {
+    name: 'Slow (32x32)',
+    size: 32,
+    populationSize: 30,
+    elitrate: 0.05,
+    mutation: 0.05,
   }
 ]
 const ControlBar = ({ className }: ControlBarProps) => {

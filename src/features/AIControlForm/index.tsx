@@ -94,7 +94,6 @@ const AIValuesForm = ({ className }: AIControlForm) => {
             <Input
               type="number"
               min={0}
-              max={1}
               step={0.01}
               value={mutation}
               onChange={(e) => setMutation(+e.target.value)}

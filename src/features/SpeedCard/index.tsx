@@ -29,6 +29,7 @@ const SpeedCard = () => {
       lastLengthRef.current = chartLength;
     } 
     else if (chartLength == 0) {
+      lastLengthRef.current = 0;
       setSpeed(0);
     }
 
