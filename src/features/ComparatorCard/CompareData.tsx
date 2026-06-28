@@ -2,18 +2,10 @@ import DrawingCanvas from "../DrawingCanvas";
 import { Field, FieldLabel } from "@/shadcn/components/ui/field";
 import { ComparisonText, Typography } from "@/shared";
 import { Button } from "@/shadcn/components/ui/button";
+import type { CompareDataItem } from ".";
+import { useActions, useSettings } from "@/app/providers/AppContext";
 
-export interface CompareDataItem {
-  size: number;
-  populationSize: number;
-  elitrate: number;
-  mutation: number;
-  maxIteration: number;
 
-  generation: number;
-  fitness: number;
-  aiPixels: Uint8Array;
-}
 interface CompareDataProps {
   primaryData: CompareDataItem;
   comparationData?: CompareDataItem;
@@ -54,6 +46,27 @@ const CompareData = ({
   comparationData,
   clearData,
 }: CompareDataProps) => {
+  const { status } = useActions();
+  
+  const {
+    setSize,
+    setPopulationSize,
+    setElitrate,
+    setMutation,
+    setMaxIteration,
+  } = useSettings();
+
+  const isConfigSettable = status == 'init';
+  const setConfigData = () => {
+    if(!primaryData) return;
+
+    setSize(primaryData.size);
+    setPopulationSize(primaryData.populationSize);
+    setElitrate(primaryData.elitrate);
+    setMutation(primaryData.mutation);
+    setMaxIteration(primaryData.maxIteration);
+  }
+
   return (
     <div>
       <div className="block sm:flex mb-4">
@@ -102,6 +115,10 @@ const CompareData = ({
           <Field>
             <FieldLabel>Max Iterations</FieldLabel>
             {primaryData.maxIteration}
+          </Field>
+          <Field>
+            <FieldLabel>Actions</FieldLabel>
+            <Button variant="outline" onClick={() => setConfigData()} disabled={!isConfigSettable}>Use config</Button>
           </Field>
         </div>
         <div>

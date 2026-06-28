@@ -2,15 +2,10 @@ import { useGA, type FitnessStoryItem } from "@/app/providers/AppContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shadcn/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/shadcn/components/ui/chart";
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/shadcn/components/ui/empty";
+import decimateFitnessStory from "@/utils/decimate";
 import { ChartLineIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Area, AreaChart, XAxis, YAxis } from "recharts";
-
-const decimate = (data: FitnessStoryItem[], maxPoints = 500) => {
-  if (data.length <= maxPoints) return data;
-  const step = Math.ceil(data.length / maxPoints);
-  return data.filter((_, i) => i % step === 0);
-};
 
 const FitnessGraphCard = () => {
   const { chartDataRef } = useGA();
@@ -18,7 +13,7 @@ const FitnessGraphCard = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setChartData(decimate([...chartDataRef.current]));
+      setChartData(decimateFitnessStory([...chartDataRef.current]));
     }, 500);
     return () => clearInterval(interval);
 
@@ -38,8 +33,6 @@ const FitnessGraphCard = () => {
       color: "#000000"
     },
   };
-
-
 
   return (
     <Card>
