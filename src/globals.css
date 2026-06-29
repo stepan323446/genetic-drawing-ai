@@ -138,3 +138,15 @@
 .markdown-text p {
     @apply mb-2;
 }
+.markdown-text ul, ol {
+    @apply pl-5;
+}
+.markdown-text ul {
+    @apply list-disc;
+}
+.markdown-text ol {
+    @apply list-decimal;
+}
+.markdown-text li {
+    @apply mb-2;
+}
